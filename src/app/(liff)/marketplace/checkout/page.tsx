@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowLeft, MapPin, CreditCard } from 'lucide-react';
+import { ArrowLeft, MapPin, CreditCard, ChevronDown, ChevronUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
 import { useLiff } from '@/hooks/use-liff';
+import { GoogleMapPicker } from '@/components/shared/GoogleMapPicker';
 
 const PAYMENT_METHODS = [
   { value: 'cash', label: 'เงินสด', icon: '💵' },
@@ -16,14 +17,23 @@ export default function CheckoutPage() {
   const { profile } = useLiff();
   const { items, total, merchantId, clearCart } = useCart();
   const [address, setAddress] = useState('');
+  const [deliveryLat, setDeliveryLat] = useState<number | null>(null);
+  const [deliveryLng, setDeliveryLng] = useState<number | null>(null);
   const [note, setNote] = useState('');
   const [payment, setPayment] = useState('cash');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [showMap, setShowMap] = useState(false);
 
   const deliveryFee = 20;
   const platformFee = 5;
   const grandTotal = total + deliveryFee + platformFee;
+
+  const handleLocationSelect = (lat: number, lng: number, addr: string) => {
+    setDeliveryLat(lat);
+    setDeliveryLng(lng);
+    setAddress(addr);
+  };
 
   const handleSubmit = async () => {
     if (!address.trim()) { setError('กรุณากรอกที่อยู่จัดส่ง'); return; }
@@ -39,6 +49,8 @@ export default function CheckoutPage() {
           merchantId,
           items: items.map((i) => ({ menuItemId: i.id, quantity: i.quantity, price: i.price })),
           deliveryAddress: address,
+          deliveryLat,
+          deliveryLng,
           deliveryNote: note,
           paymentMethod: payment,
           subtotal: total,
@@ -78,6 +90,29 @@ export default function CheckoutPage() {
             <MapPin className="h-4 w-4 text-orange-500" />
             <p className="font-semibold text-gray-900">ที่อยู่จัดส่ง</p>
           </div>
+
+          {/* Map toggle button */}
+          <button
+            type="button"
+            onClick={() => setShowMap((v) => !v)}
+            className="mb-3 flex w-full items-center justify-between rounded-xl border border-orange-200 bg-orange-50 px-3 py-2.5 text-sm font-medium text-orange-600 active:bg-orange-100"
+          >
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              <span>{showMap ? 'ซ่อนแผนที่' : 'ปักหมุดตำแหน่งบนแผนที่'}</span>
+            </div>
+            {showMap ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </button>
+
+          {/* Map — rendered only when open */}
+          {showMap && (
+            <div className="mb-3">
+              <GoogleMapPicker
+                onLocationSelect={handleLocationSelect}
+              />
+            </div>
+          )}
+
           <textarea
             value={address}
             onChange={(e) => setAddress(e.target.value)}
@@ -85,6 +120,11 @@ export default function CheckoutPage() {
             rows={3}
             className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-orange-400 resize-none"
           />
+          {deliveryLat && deliveryLng && (
+            <p className="mt-1 text-[11px] text-gray-400">
+              📍 {deliveryLat.toFixed(5)}, {deliveryLng.toFixed(5)}
+            </p>
+          )}
           <input
             value={note}
             onChange={(e) => setNote(e.target.value)}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { ArrowLeft, ShoppingCart, Plus, Minus, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -26,7 +26,8 @@ interface Shop {
   menu_items?: MenuItem[];
 }
 
-export default function ShopPage({ params }: { params: { shopId: string } }) {
+export default function ShopPage({ params }: { params: Promise<{ shopId: string }> }) {
+  const { shopId } = use(params);
   const router = useRouter();
   const { items, addItem, removeItem, updateQuantity, total, merchantId } = useCart();
   const [shop, setShop] = useState<Shop | null>(null);
@@ -35,21 +36,21 @@ export default function ShopPage({ params }: { params: { shopId: string } }) {
   const [pendingItem, setPendingItem] = useState<MenuItem | null>(null);
 
   useEffect(() => {
-    fetch(`/api/restaurants/${params.shopId}`)
+    fetch(`/api/restaurants/${shopId}`)
       .then((r) => r.json())
       .then((d) => { setShop(d.data); setLoading(false); })
       .catch(() => setLoading(false));
-  }, [params.shopId]);
+  }, [shopId]);
 
   const getQty = (itemId: string) => items.find((i) => i.id === itemId)?.quantity || 0;
 
   const handleAdd = (item: MenuItem) => {
-    if (merchantId && merchantId !== params.shopId) {
+    if (merchantId && merchantId !== shopId) {
       setPendingItem(item);
       setShowConflict(true);
       return;
     }
-    addItem({ id: item.id, name: item.name, price: item.price, merchantId: params.shopId });
+    addItem({ id: item.id, name: item.name, price: item.price, merchantId: shopId });
   };
 
   const menuByCategory = (shop?.menu_items || []).reduce<Record<string, MenuItem[]>>((acc, item) => {
@@ -194,7 +195,7 @@ export default function ShopPage({ params }: { params: { shopId: string } }) {
                   if (pendingItem) {
                     // Clear cart by removing all items and adding new one
                     items.forEach(i => removeItem(i.id));
-                    addItem({ id: pendingItem.id, name: pendingItem.name, price: pendingItem.price, merchantId: params.shopId });
+                    addItem({ id: pendingItem.id, name: pendingItem.name, price: pendingItem.price, merchantId: shopId });
                   }
                   setShowConflict(false);
                   setPendingItem(null);

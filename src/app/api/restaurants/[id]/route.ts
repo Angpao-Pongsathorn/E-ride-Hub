@@ -27,19 +27,25 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
       .eq('merchant_id', id)
       .order('sort_order');
 
-    // Group items by category
+    // Build flat menu_items with category name (for shop page)
+    const catMap = Object.fromEntries((categories || []).map((c) => [c.id, c.name]));
+    const menuItems = (items || []).map((item) => ({
+      ...item,
+      category: catMap[item.category_id] || 'เมนู',
+    }));
+
+    // Group items by category (for admin/merchant views)
     const categoriesWithItems = categories?.map((cat) => ({
       ...cat,
       items: (items || []).filter((i) => i.category_id === cat.id),
     })) || [];
-
-    // Items without category
     const uncategorized = (items || []).filter((i) => !i.category_id);
     if (uncategorized.length > 0 && categoriesWithItems.length === 0) {
       categoriesWithItems.push({ id: 'default', merchant_id: id, name: 'เมนูทั้งหมด', sort_order: 0, is_active: true, items: uncategorized });
     }
 
-    return NextResponse.json({ data: { merchant, categories: categoriesWithItems } });
+    // Flatten merchant + menu_items so shop page can use shop.name, shop.menu_items directly
+    return NextResponse.json({ data: { ...merchant, menu_items: menuItems, categories: categoriesWithItems } });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
