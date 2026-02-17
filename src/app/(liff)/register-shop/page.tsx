@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Store, MapPin, User, Image as ImageIcon, Clock, CreditCard, Navigation } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useLiff } from '@/hooks/use-liff';
@@ -58,6 +58,7 @@ export default function RegisterShopPage() {
   const [mapJump, setMapJump] = useState<{ lat: number; lng: number } | null>(null);
   const [latInput, setLatInput] = useState('');
   const [lngInput, setLngInput] = useState('');
+  const isJumpingRef = useRef(false); // ป้องกัน input ถูก overwrite ตอน jump
 
   const set = (field: keyof FormData, value: string | File | null) =>
     setForm((f) => ({ ...f, [field]: value }));
@@ -221,8 +222,12 @@ export default function RegisterShopPage() {
                 initialLng={form.lng ? parseFloat(form.lng) : undefined}
                 jumpTo={mapJump}
                 onLocationSelect={(lat, lng, addr, district, province) => {
-                  setLatInput(lat.toFixed(6));
-                  setLngInput(lng.toFixed(6));
+                  // อัปเดต input เฉพาะตอนที่ผู้ใช้ปักหมุดเอง (ไม่ใช่ตอน jump จาก input)
+                  if (!isJumpingRef.current) {
+                    setLatInput(lat.toFixed(6));
+                    setLngInput(lng.toFixed(6));
+                  }
+                  isJumpingRef.current = false;
                   setForm((f) => ({
                     ...f,
                     lat: lat.toString(),
@@ -266,8 +271,8 @@ export default function RegisterShopPage() {
                       const lat = parseFloat(latInput);
                       const lng = parseFloat(lngInput);
                       if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                        isJumpingRef.current = true; // บอกว่ากำลัง jump — อย่า overwrite input
                         setMapJump({ lat, lng });
-                        // reset jumpTo หลัง 300ms เพื่อให้ใช้ซ้ำได้
                         setTimeout(() => setMapJump(null), 300);
                       }
                     }}

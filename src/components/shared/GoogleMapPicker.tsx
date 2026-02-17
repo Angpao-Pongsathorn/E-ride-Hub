@@ -181,13 +181,23 @@ export function GoogleMapPicker({ initialLat, initialLng, jumpTo, onLocationSele
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // เมื่อ parent ส่ง jumpTo coords มา → เลื่อนแผนที่และหมุดไปตำแหน่งนั้นทันที
+  // เมื่อ parent ส่ง jumpTo coords มา → เลื่อนแผนที่และหมุดไปตำแหน่งนั้น
+  // แล้ว reverse geocode ใหม่ เพื่ออัปเดตที่อยู่ตาม coords ที่กรอก
   useEffect(() => {
     if (!jumpTo || !mapInstance.current || !markerRef.current) return;
     const latlng: [number, number] = [jumpTo.lat, jumpTo.lng];
     markerRef.current.setLatLng(latlng);
     mapInstance.current.setView(latlng, 17);
-    updateLocation(jumpTo.lat, jumpTo.lng);
+    // reverse geocode เพื่อแสดงที่อยู่ใหม่ แต่ไม่เรียก onLocationSelect
+    // (lat/lng ถูกต้องอยู่แล้ว parent รู้อยู่แล้ว แค่อัปเดต display address)
+    setCoords({ lat: jumpTo.lat, lng: jumpTo.lng });
+    setGeocoding(true);
+    reverseGeocodeNominatim(jumpTo.lat, jumpTo.lng).then((result) => {
+      setGeocoding(false);
+      setAddress(result.address);
+      // แจ้ง parent ด้วยค่าที่ถูกต้อง (รวม district/province จาก geocode)
+      onLocationSelect(jumpTo.lat, jumpTo.lng, result.address, result.district, result.province);
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jumpTo]);
 
