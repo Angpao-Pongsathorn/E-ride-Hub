@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Check, Store, MapPin, User, Image as ImageIcon, Clock, CreditCard, Navigation } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useLiff } from '@/hooks/use-liff';
@@ -145,10 +145,11 @@ export default function RegisterShopPage() {
     }
   };
 
-  if (done) {
-    router.replace('/register-shop/success');
-    return null;
-  }
+  useEffect(() => {
+    if (done) router.replace('/register-shop/success');
+  }, [done, router]);
+
+  if (done) return null;
 
   return (
     <div className="min-h-screen bg-gray-50">

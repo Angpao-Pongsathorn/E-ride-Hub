@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     const {
       lineUserId, name, description, category, phone,
       address, district, province, lat, lng,
-      ownerName, ownerIdCard, ownerPhone,
+      ownerName, ownerIdCard, ownerPhone, lineId,
       openTime, closeTime,
       bankName, bankAccount, bankAccountName,
     } = body;
@@ -83,6 +83,7 @@ export async function POST(req: NextRequest) {
     if (ownerName) insertData.owner_name = ownerName;
     if (ownerIdCard) insertData.owner_id_card = ownerIdCard;
     if (ownerPhone) insertData.owner_phone = ownerPhone;
+    if (lineId) insertData.line_id = lineId;
     if (bankName) insertData.bank_name = bankName;
     if (bankAccount) insertData.bank_account = bankAccount;
     if (bankAccountName) insertData.bank_account_name = bankAccountName;

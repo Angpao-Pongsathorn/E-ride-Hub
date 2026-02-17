@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Check, User, Bike, FileText, CreditCard, Shield, Camera, Upload, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useLiff } from '@/hooks/use-liff';
@@ -212,10 +212,11 @@ export default function RegisterRiderPage() {
     }
   };
 
-  if (done) {
-    router.replace('/register-rider/success');
-    return null;
-  }
+  useEffect(() => {
+    if (done) router.replace('/register-rider/success');
+  }, [done, router]);
+
+  if (done) return null;
 
   return (
     <div className="min-h-screen bg-gray-50">
