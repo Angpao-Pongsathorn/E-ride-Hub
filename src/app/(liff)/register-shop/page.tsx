@@ -70,9 +70,7 @@ export default function RegisterShopPage() {
     if (step === 2 && (!form.ownerName.trim() || !form.ownerIdCard.trim())) {
       setError('กรุณากรอกชื่อและเลขบัตรประชาชน'); return false;
     }
-    if (step === 5 && (!form.bankName.trim() || !form.bankAccount.trim())) {
-      setError('กรุณากรอกข้อมูลบัญชีธนาคาร'); return false;
-    }
+    // step 5: bank info is optional — no validation needed
     return true;
   };
 
@@ -86,33 +84,53 @@ export default function RegisterShopPage() {
     if (!profile?.userId) return;
     setSubmitting(true);
     setError('');
+
+    const payload = {
+      lineUserId: profile.userId,
+      name: form.name,
+      category: form.category,
+      description: form.description,
+      phone: form.phone,
+      address: form.address,
+      district: form.district,
+      province: form.province,
+      lat: form.lat ? parseFloat(form.lat) : null,
+      lng: form.lng ? parseFloat(form.lng) : null,
+      ownerName: form.ownerName,
+      ownerIdCard: form.ownerIdCard,
+      ownerPhone: form.ownerPhone,
+      openTime: form.openTime,
+      closeTime: form.closeTime,
+      bankName: form.bankName,
+      bankAccount: form.bankAccount,
+      bankAccountName: form.bankAccountName,
+    };
+
     try {
-      const res = await fetch('/api/restaurants', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lineUserId: profile.userId,
-          name: form.name,
-          category: form.category,
-          description: form.description,
-          phone: form.phone,
-          address: form.address,
-          district: form.district,
-          province: form.province,
-          lat: form.lat ? parseFloat(form.lat) : null,
-          lng: form.lng ? parseFloat(form.lng) : null,
-          ownerName: form.ownerName,
-          ownerIdCard: form.ownerIdCard,
-          ownerPhone: form.ownerPhone,
-          openTime: form.openTime,
-          closeTime: form.closeTime,
-          bankName: form.bankName,
-          bankAccount: form.bankAccount,
-          bankAccountName: form.bankAccountName,
+      // ส่งทั้ง 2 พร้อมกัน — ถ้า Google Sheet ล้มเหลวก็ไม่ block หลัก
+      const [apiRes] = await Promise.allSettled([
+        fetch('/api/restaurants', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'เกิดข้อผิดพลาด');
+        // ส่งไป Google Apps Script Webhook (บันทึกใน Google Sheet)
+        process.env.NEXT_PUBLIC_GOOGLE_SHEET_WEBHOOK
+          ? fetch(process.env.NEXT_PUBLIC_GOOGLE_SHEET_WEBHOOK, {
+              method: 'POST',
+              headers: { 'Content-Type': 'text/plain' }, // Apps Script ต้องการ text/plain
+              body: JSON.stringify(payload),
+            }).catch(() => null) // ไม่ throw ถ้า sheet ล้มเหลว
+          : Promise.resolve(null),
+      ]);
+
+      if (apiRes.status === 'fulfilled') {
+        const data = await apiRes.value.json();
+        if (!apiRes.value.ok) throw new Error(data.error || 'เกิดข้อผิดพลาด');
+      } else {
+        throw new Error(apiRes.reason?.message || 'เกิดข้อผิดพลาด');
+      }
+
       setDone(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'เกิดข้อผิดพลาด');
@@ -303,7 +321,7 @@ export default function RegisterShopPage() {
         {step === 5 && (
           <div className="space-y-3">
             <div>
-              <label className="text-xs font-medium text-gray-500 mb-1 block">ธนาคาร *</label>
+              <label className="text-xs font-medium text-gray-500 mb-1 block">ธนาคาร <span className="text-gray-400 font-normal">(ไม่บังคับ)</span></label>
               <select value={form.bankName} onChange={(e) => set('bankName', e.target.value)}
                 className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-orange-400 bg-white">
                 <option value="">เลือกธนาคาร</option>
@@ -313,7 +331,7 @@ export default function RegisterShopPage() {
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 mb-1 block">เลขบัญชี *</label>
+              <label className="text-xs font-medium text-gray-500 mb-1 block">เลขบัญชี <span className="text-gray-400 font-normal">(ไม่บังคับ)</span></label>
               <input value={form.bankAccount} onChange={(e) => set('bankAccount', e.target.value)}
                 placeholder="xxx-x-xxxxx-x" className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-orange-400" />
             </div>

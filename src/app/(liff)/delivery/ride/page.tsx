@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowLeft, MapPin, Navigation } from 'lucide-react';
+import { ArrowLeft, MapPin, Navigation, Home } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useLiff } from '@/hooks/use-liff';
 import { AddressAutocomplete } from '@/components/shared/AddressAutocomplete';
+import { OrderCountdownOverlay } from '@/components/shared/OrderCountdownOverlay';
 
 export default function RidePage() {
   const router = useRouter();
@@ -18,6 +19,8 @@ export default function RidePage() {
   const [submitting, setSubmitting] = useState(false);
   const [fare, setFare] = useState<number | null>(null);
   const [error, setError] = useState('');
+  const [showCountdown, setShowCountdown] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleCalculate = async () => {
     if (!origin.trim() || !destination.trim()) {
@@ -41,15 +44,21 @@ export default function RidePage() {
     }
   };
 
-  const handleBook = async () => {
+  const handlePressBook = () => {
     if (!profile?.userId) return;
+    setError('');
+    setShowCountdown(true);
+  };
+
+  const handleCountdownConfirm = async () => {
+    setShowCountdown(false);
     setSubmitting(true);
     try {
       const res = await fetch('/api/rides', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          lineUserId: profile.userId,
+          lineUserId: profile!.userId,
           pickupAddress: origin,
           dropoffAddress: destination,
           pickupLat: originLat,
@@ -61,8 +70,7 @@ export default function RidePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'เกิดข้อผิดพลาด');
-      alert('จองรถสำเร็จ! ไรเดอร์กำลังมา');
-      router.push('/home');
+      setSuccess(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'เกิดข้อผิดพลาด');
     } finally {
@@ -70,8 +78,43 @@ export default function RidePage() {
     }
   };
 
+  // ─── Success Screen ───────────────────────────────────────────────
+  if (success) {
+    return (
+      <div className="min-h-screen bg-orange-500 flex flex-col items-center justify-center px-6 text-center">
+        <div className="text-7xl mb-4">🏍️</div>
+        <h1 className="text-2xl font-bold text-white mb-1">จองรถสำเร็จ!</h1>
+        <p className="text-orange-100 text-sm mb-2">ไรเดอร์กำลังเดินทางมารับคุณ</p>
+        {fare !== null && (
+          <p className="text-white/80 text-xs mb-8">ค่าเดินทาง ฿{fare}</p>
+        )}
+        <button
+          onClick={() => router.push('/home')}
+          className="flex w-full max-w-xs items-center justify-center gap-2 rounded-2xl border-2 border-white/40 py-3.5 font-semibold text-white"
+        >
+          <Home className="h-4 w-4" />
+          กลับหน้าหลัก
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {showCountdown && (
+        <OrderCountdownOverlay
+          orderType="ride"
+          onConfirm={handleCountdownConfirm}
+          onCancel={() => setShowCountdown(false)}
+        />
+      )}
+
+      {submitting && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-white border-t-transparent" />
+        </div>
+      )}
+
       <div className="sticky top-0 z-10 flex items-center gap-3 bg-white px-4 py-4 shadow-sm">
         <button onClick={() => router.back()} className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100">
           <ArrowLeft className="h-5 w-5 text-gray-700" />
@@ -125,11 +168,11 @@ export default function RidePage() {
             </div>
             <p className="text-xs text-gray-400">ราคารวมค่าบริการและน้ำมัน</p>
             <button
-              onClick={handleBook}
-              disabled={submitting}
+              onClick={handlePressBook}
+              disabled={submitting || showCountdown}
               className="mt-4 w-full rounded-2xl bg-orange-500 py-3.5 font-semibold text-white disabled:opacity-60"
             >
-              {submitting ? 'กำลังจอง...' : 'จองทันที'}
+              จองทันที
             </button>
           </div>
         )}
