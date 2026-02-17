@@ -25,6 +25,7 @@ interface NominatimAddress {
 interface GoogleMapPickerProps {
   initialLat?: number;
   initialLng?: number;
+  jumpTo?: { lat: number; lng: number } | null; // เลื่อนหมุดจาก outside
   onLocationSelect: (lat: number, lng: number, address: string, district?: string, province?: string) => void;
 }
 
@@ -91,7 +92,7 @@ async function reverseGeocodeNominatim(lat: number, lng: number): Promise<Geocod
   }
 }
 
-export function GoogleMapPicker({ initialLat, initialLng, onLocationSelect }: GoogleMapPickerProps) {
+export function GoogleMapPicker({ initialLat, initialLng, jumpTo, onLocationSelect }: GoogleMapPickerProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const markerRef = useRef<any>(null);
@@ -179,6 +180,16 @@ export function GoogleMapPicker({ initialLat, initialLng, onLocationSelect }: Go
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // เมื่อ parent ส่ง jumpTo coords มา → เลื่อนแผนที่และหมุดไปตำแหน่งนั้นทันที
+  useEffect(() => {
+    if (!jumpTo || !mapInstance.current || !markerRef.current) return;
+    const latlng: [number, number] = [jumpTo.lat, jumpTo.lng];
+    markerRef.current.setLatLng(latlng);
+    mapInstance.current.setView(latlng, 17);
+    updateLocation(jumpTo.lat, jumpTo.lng);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jumpTo]);
 
   const handleMyLocation = () => {
     if (!navigator.geolocation) return;

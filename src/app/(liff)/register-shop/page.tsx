@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, Store, MapPin, User, Image as ImageIcon, Clock, CreditCard } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Store, MapPin, User, Image as ImageIcon, Clock, CreditCard, Navigation } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useLiff } from '@/hooks/use-liff';
 import { GoogleMapPicker } from '@/components/shared/GoogleMapPicker';
@@ -55,6 +55,9 @@ export default function RegisterShopPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+  const [mapJump, setMapJump] = useState<{ lat: number; lng: number } | null>(null);
+  const [latInput, setLatInput] = useState('');
+  const [lngInput, setLngInput] = useState('');
 
   const set = (field: keyof FormData, value: string | File | null) =>
     setForm((f) => ({ ...f, [field]: value }));
@@ -208,7 +211,7 @@ export default function RegisterShopPage() {
           </div>
         )}
 
-        {/* Step 1: Address + Google Map */}
+        {/* Step 1: Address + Map */}
         {step === 1 && (
           <div className="space-y-3">
             <div>
@@ -216,7 +219,10 @@ export default function RegisterShopPage() {
               <GoogleMapPicker
                 initialLat={form.lat ? parseFloat(form.lat) : undefined}
                 initialLng={form.lng ? parseFloat(form.lng) : undefined}
+                jumpTo={mapJump}
                 onLocationSelect={(lat, lng, addr, district, province) => {
+                  setLatInput(lat.toFixed(6));
+                  setLngInput(lng.toFixed(6));
                   setForm((f) => ({
                     ...f,
                     lat: lat.toString(),
@@ -228,6 +234,53 @@ export default function RegisterShopPage() {
                 }}
               />
             </div>
+
+            {/* Manual lat/lng input */}
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 space-y-2">
+              <p className="text-xs font-medium text-gray-500">หรือกรอกพิกัดโดยตรง</p>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <label className="text-[11px] text-gray-400 mb-0.5 block">ละติจูด</label>
+                  <input
+                    value={latInput}
+                    onChange={(e) => setLatInput(e.target.value)}
+                    placeholder="เช่น 15.66170"
+                    inputMode="decimal"
+                    className="w-full rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-sm outline-none focus:border-orange-400"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="text-[11px] text-gray-400 mb-0.5 block">ลองจิจูด</label>
+                  <input
+                    value={lngInput}
+                    onChange={(e) => setLngInput(e.target.value)}
+                    placeholder="เช่น 104.14030"
+                    inputMode="decimal"
+                    className="w-full rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-sm outline-none focus:border-orange-400"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const lat = parseFloat(latInput);
+                      const lng = parseFloat(lngInput);
+                      if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                        setMapJump({ lat, lng });
+                        // reset jumpTo หลัง 300ms เพื่อให้ใช้ซ้ำได้
+                        setTimeout(() => setMapJump(null), 300);
+                      }
+                    }}
+                    className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500 active:bg-orange-600"
+                    title="ไปตำแหน่งนี้"
+                  >
+                    <Navigation className="h-4 w-4 text-white" />
+                  </button>
+                </div>
+              </div>
+              <p className="text-[11px] text-gray-400">กรอกแล้วกด <span className="inline-flex items-center gap-0.5 text-orange-500">🧭</span> เพื่อเลื่อนหมุด</p>
+            </div>
+
             <div>
               <label className="text-xs font-medium text-gray-500 mb-1 block">ที่อยู่ร้าน *</label>
               <textarea value={form.address} onChange={(e) => set('address', e.target.value)}
