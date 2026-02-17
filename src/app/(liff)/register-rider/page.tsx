@@ -119,6 +119,7 @@ interface FormData {
   fullName: string;
   idCard: string;
   phone: string;
+  lineId: string;
   address: string;
   vehicleType: string;
   vehicleBrand: string;
@@ -134,7 +135,7 @@ interface FormData {
 }
 
 const INITIAL: FormData = {
-  fullName: '', idCard: '', phone: '', address: '',
+  fullName: '', idCard: '', phone: '', lineId: '', address: '',
   vehicleType: 'motorcycle', vehicleBrand: '', vehicleModel: '', licensePlate: '',
   idCardFile: null, vehicleDoc: null, driverLicense: null,
   bankName: '', bankAccount: '', bankAccountName: '',
@@ -190,6 +191,7 @@ export default function RegisterRiderPage() {
           fullName: form.fullName,
           idCard: form.idCard,
           phone: form.phone,
+          lineId: form.lineId,
           address: form.address,
           vehicleType: form.vehicleType,
           vehicleBrand: form.vehicleBrand,
@@ -211,19 +213,8 @@ export default function RegisterRiderPage() {
   };
 
   if (done) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6 text-center">
-        <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
-          <Check className="h-8 w-8 text-green-500" />
-        </div>
-        <h2 className="text-xl font-bold text-gray-900 mb-2">สมัครสำเร็จ!</h2>
-        <p className="text-gray-500 text-sm mb-1">ทีมงานจะตรวจสอบและอนุมัติภายใน 1-2 วันทำการ</p>
-        <p className="text-gray-400 text-xs mb-6">คุณจะได้รับแจ้งเตือนผ่าน LINE เมื่ออนุมัติแล้ว</p>
-        <button onClick={() => router.push('/home')} className="rounded-full bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white">
-          กลับหน้าหลัก
-        </button>
-      </div>
-    );
+    router.replace('/register-rider/success');
+    return null;
   }
 
   return (
@@ -264,6 +255,15 @@ export default function RegisterRiderPage() {
                 />
               </div>
             ))}
+            <div>
+              <label className="text-xs font-medium text-gray-500 mb-1 block">LINE ID <span className="text-gray-400 font-normal">(ไม่บังคับ)</span></label>
+              <input
+                value={form.lineId}
+                onChange={(e) => set('lineId', e.target.value)}
+                placeholder="@yourlineid"
+                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-orange-400"
+              />
+            </div>
           </div>
         )}
 
