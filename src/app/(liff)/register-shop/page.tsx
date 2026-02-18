@@ -5,6 +5,8 @@ import { ArrowLeft, ArrowRight, Check, Store, MapPin, User, Image as ImageIcon, 
 import { useRouter } from 'next/navigation';
 import { useLiff } from '@/hooks/use-liff';
 import { GoogleMapPicker } from '@/components/shared/GoogleMapPicker';
+import { FEATURES } from '@/config/features';
+import { ComingSoon } from '@/components/shared/ComingSoon';
 
 const CATEGORIES = ['อาหาร', 'OTOP', 'ของสด', 'เครื่องดื่ม', 'ขนม', 'อื่นๆ'];
 
@@ -60,6 +62,8 @@ export default function RegisterShopPage() {
   const [latInput, setLatInput] = useState('');
   const [lngInput, setLngInput] = useState('');
   const isJumpingRef = useRef(false); // ป้องกัน input ถูก overwrite ตอน jump
+
+  if (!FEATURES.registerShop) return <ComingSoon title="เปิดร้านค้า" />;
 
   const set = (field: keyof FormData, value: string | File | null) =>
     setForm((f) => ({ ...f, [field]: value }));

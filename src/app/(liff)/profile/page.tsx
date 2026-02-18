@@ -5,6 +5,7 @@ import { User, MapPin, Clock, ChevronRight, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLiff } from '@/hooks/use-liff';
+import { FEATURES } from '@/config/features';
 
 interface OrderSummary {
   id: string;
@@ -56,28 +57,34 @@ export default function ProfilePage() {
 
       <div className="px-4 -mt-3 space-y-4">
         {/* Quick Actions */}
-        <div className="rounded-2xl bg-white shadow-sm overflow-hidden">
-          <Link href="/register-shop" className="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50">
-            <div className="h-9 w-9 rounded-xl bg-orange-100 flex items-center justify-center">
-              <span className="text-lg">🏪</span>
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">เปิดร้านค้า</p>
-              <p className="text-xs text-gray-400">สมัครเป็นพาร์ทเนอร์ร้านค้า</p>
-            </div>
-            <ChevronRight className="h-4 w-4 text-gray-400" />
-          </Link>
-          <Link href="/register-rider" className="flex items-center gap-3 px-4 py-3.5">
-            <div className="h-9 w-9 rounded-xl bg-green-100 flex items-center justify-center">
-              <span className="text-lg">🛵</span>
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">สมัครไรเดอร์</p>
-              <p className="text-xs text-gray-400">รับงานได้ทันที ไม่มีค่าสมัคร</p>
-            </div>
-            <ChevronRight className="h-4 w-4 text-gray-400" />
-          </Link>
-        </div>
+        {(FEATURES.registerShop || FEATURES.registerRider) && (
+          <div className="rounded-2xl bg-white shadow-sm overflow-hidden">
+            {FEATURES.registerShop && (
+              <Link href="/register-shop" className="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50">
+                <div className="h-9 w-9 rounded-xl bg-orange-100 flex items-center justify-center">
+                  <span className="text-lg">🏪</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">เปิดร้านค้า</p>
+                  <p className="text-xs text-gray-400">สมัครเป็นพาร์ทเนอร์ร้านค้า</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </Link>
+            )}
+            {FEATURES.registerRider && (
+              <Link href="/register-rider" className="flex items-center gap-3 px-4 py-3.5">
+                <div className="h-9 w-9 rounded-xl bg-green-100 flex items-center justify-center">
+                  <span className="text-lg">🛵</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">สมัครไรเดอร์</p>
+                  <p className="text-xs text-gray-400">รับงานได้ทันที ไม่มีค่าสมัคร</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </Link>
+            )}
+          </div>
+        )}
 
         {/* Order History */}
         <div className="rounded-2xl bg-white shadow-sm p-4">

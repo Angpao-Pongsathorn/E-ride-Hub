@@ -2,6 +2,8 @@
 
 import { ArrowLeft, Tag, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { FEATURES } from '@/config/features';
+import { ComingSoon } from '@/components/shared/ComingSoon';
 
 const PROMOTIONS = [
   {
@@ -40,6 +42,8 @@ const PROMOTIONS = [
 
 export default function PromotionsPage() {
   const router = useRouter();
+
+  if (!FEATURES.promotions) return <ComingSoon title="โปรโมชั่น" />;
 
   const handleCopy = (code: string) => {
     navigator.clipboard.writeText(code).then(() => {

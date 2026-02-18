@@ -2,15 +2,16 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, Bike, Package, Star, ChevronRight } from 'lucide-react';
+import { ShoppingBag, Bike, Package, Star, ChevronRight, Lock } from 'lucide-react';
 import { useLiff } from '@/hooks/use-liff';
 import { useEffect, useState } from 'react';
+import { FEATURES } from '@/config/features';
 
 const SERVICES = [
-  { href: '/marketplace', icon: ShoppingBag, label: 'สั่งอาหาร', color: 'bg-orange-100', iconColor: 'text-orange-500' },
-  { href: '/delivery/ride', icon: Bike, label: 'เรียกรถ', color: 'bg-green-100', iconColor: 'text-green-500' },
-  { href: '/delivery/parcel', icon: Package, label: 'ส่งพัสดุ', color: 'bg-blue-100', iconColor: 'text-blue-500' },
-  { href: '/promotions', icon: Star, label: 'โปรโมชั่น', color: 'bg-yellow-100', iconColor: 'text-yellow-500' },
+  { href: '/marketplace', icon: ShoppingBag, label: 'สั่งอาหาร', color: 'bg-orange-100', iconColor: 'text-orange-500', feature: 'marketplace' as const },
+  { href: '/delivery/ride', icon: Bike, label: 'เรียกรถ', color: 'bg-green-100', iconColor: 'text-green-500', feature: 'ride' as const },
+  { href: '/delivery/parcel', icon: Package, label: 'ส่งพัสดุ', color: 'bg-blue-100', iconColor: 'text-blue-500', feature: 'parcel' as const },
+  { href: '/promotions', icon: Star, label: 'โปรโมชั่น', color: 'bg-yellow-100', iconColor: 'text-yellow-500', feature: 'promotions' as const },
 ];
 
 interface FeaturedShop {
@@ -51,28 +52,44 @@ export default function HomePage() {
         {/* Services Grid */}
         <div className="rounded-2xl bg-white shadow-sm p-4 mb-4">
           <div className="grid grid-cols-4 gap-3">
-            {SERVICES.map((s) => (
-              <Link key={s.href} href={s.href} className="flex flex-col items-center gap-1.5">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${s.color}`}>
-                  <s.icon className={`h-6 w-6 ${s.iconColor}`} />
+            {SERVICES.map((s) => {
+              const enabled = FEATURES[s.feature];
+              if (enabled) {
+                return (
+                  <Link key={s.href} href={s.href} className="flex flex-col items-center gap-1.5">
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${s.color}`}>
+                      <s.icon className={`h-6 w-6 ${s.iconColor}`} />
+                    </div>
+                    <span className="text-xs text-gray-600 text-center">{s.label}</span>
+                  </Link>
+                );
+              }
+              return (
+                <div key={s.href} className="flex flex-col items-center gap-1.5 opacity-40">
+                  <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-100">
+                    <s.icon className="h-6 w-6 text-gray-400" />
+                    <Lock className="absolute -bottom-1 -right-1 h-3.5 w-3.5 text-gray-400 bg-white rounded-full p-0.5" />
+                  </div>
+                  <span className="text-xs text-gray-400 text-center">{s.label}</span>
                 </div>
-                <span className="text-xs text-gray-600 text-center">{s.label}</span>
-              </Link>
-            ))}
+              );
+            })}
           </div>
         </div>
 
-        {/* Banner */}
-        <div className="rounded-2xl bg-gradient-to-r from-orange-500 to-orange-400 p-4 mb-4 flex items-center justify-between">
-          <div>
-            <p className="text-white font-bold text-base">ส่งฟรี!</p>
-            <p className="text-orange-100 text-xs mt-0.5">สั่งครั้งแรก ลดทันที 20 บาท</p>
-            <Link href="/promotions" className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-xs text-white">
-              ดูโปรโมชั่น <ChevronRight className="h-3 w-3" />
-            </Link>
+        {/* Banner — แสดงเฉพาะตอน promotions เปิด */}
+        {FEATURES.promotions && (
+          <div className="rounded-2xl bg-gradient-to-r from-orange-500 to-orange-400 p-4 mb-4 flex items-center justify-between">
+            <div>
+              <p className="text-white font-bold text-base">ส่งฟรี!</p>
+              <p className="text-orange-100 text-xs mt-0.5">สั่งครั้งแรก ลดทันที 20 บาท</p>
+              <Link href="/promotions" className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-xs text-white">
+                ดูโปรโมชั่น <ChevronRight className="h-3 w-3" />
+              </Link>
+            </div>
+            <div className="text-4xl">🛵</div>
           </div>
-          <div className="text-4xl">🛵</div>
-        </div>
+        )}
 
         {/* Featured Shops */}
         <div className="mb-3 flex items-center justify-between">
@@ -125,16 +142,32 @@ export default function HomePage() {
 
         {/* Quick Links */}
         <div className="mt-4 grid grid-cols-2 gap-3">
-          <Link href="/register-shop" className="rounded-2xl bg-orange-50 p-4 text-center">
-            <div className="text-2xl mb-1">🏪</div>
-            <p className="text-sm font-medium text-orange-600">เปิดร้านค้า</p>
-            <p className="text-xs text-gray-500 mt-0.5">สมัครฟรี ไม่มีค่าธรรมเนียมรายเดือน</p>
-          </Link>
-          <Link href="/register-rider" className="rounded-2xl bg-green-50 p-4 text-center">
-            <div className="text-2xl mb-1">🛵</div>
-            <p className="text-sm font-medium text-green-600">สมัครไรเดอร์</p>
-            <p className="text-xs text-gray-500 mt-0.5">รายได้ดี กำหนดเวลาเองได้</p>
-          </Link>
+          {FEATURES.registerShop ? (
+            <Link href="/register-shop" className="rounded-2xl bg-orange-50 p-4 text-center">
+              <div className="text-2xl mb-1">🏪</div>
+              <p className="text-sm font-medium text-orange-600">เปิดร้านค้า</p>
+              <p className="text-xs text-gray-500 mt-0.5">สมัครฟรี ไม่มีค่าธรรมเนียมรายเดือน</p>
+            </Link>
+          ) : (
+            <div className="rounded-2xl bg-gray-100 p-4 text-center opacity-50">
+              <div className="text-2xl mb-1">🏪</div>
+              <p className="text-sm font-medium text-gray-500">เปิดร้านค้า</p>
+              <p className="text-xs text-gray-400 mt-0.5">เร็วๆ นี้</p>
+            </div>
+          )}
+          {FEATURES.registerRider ? (
+            <Link href="/register-rider" className="rounded-2xl bg-green-50 p-4 text-center">
+              <div className="text-2xl mb-1">🛵</div>
+              <p className="text-sm font-medium text-green-600">สมัครไรเดอร์</p>
+              <p className="text-xs text-gray-500 mt-0.5">รายได้ดี กำหนดเวลาเองได้</p>
+            </Link>
+          ) : (
+            <div className="rounded-2xl bg-gray-100 p-4 text-center opacity-50">
+              <div className="text-2xl mb-1">🛵</div>
+              <p className="text-sm font-medium text-gray-500">สมัครไรเดอร์</p>
+              <p className="text-xs text-gray-400 mt-0.5">เร็วๆ นี้</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

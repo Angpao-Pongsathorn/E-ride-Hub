@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { ArrowLeft, MapPin, Navigation, Package, Home } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { FEATURES } from '@/config/features';
+import { ComingSoon } from '@/components/shared/ComingSoon';
 import { useLiff } from '@/hooks/use-liff';
 import { AddressAutocomplete } from '@/components/shared/AddressAutocomplete';
 import { OrderCountdownOverlay } from '@/components/shared/OrderCountdownOverlay';
@@ -18,6 +20,8 @@ export default function ParcelPage() {
   const router = useRouter();
   const { profile } = useLiff();
   const [pickup, setPickup] = useState('');
+
+  if (!FEATURES.parcel) return <ComingSoon title="บริการส่งพัสดุ" />;
   const [pickupLat, setPickupLat] = useState<number | null>(null);
   const [pickupLng, setPickupLng] = useState<number | null>(null);
   const [dropoff, setDropoff] = useState('');

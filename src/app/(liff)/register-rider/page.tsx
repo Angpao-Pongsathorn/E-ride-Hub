@@ -4,6 +4,8 @@ import { useRef, useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Check, User, Bike, FileText, CreditCard, Shield, Camera, Upload, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useLiff } from '@/hooks/use-liff';
+import { FEATURES } from '@/config/features';
+import { ComingSoon } from '@/components/shared/ComingSoon';
 
 // ---- DocUpload component ----
 interface DocUploadProps {
@@ -150,6 +152,8 @@ export default function RegisterRiderPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+
+  if (!FEATURES.registerRider) return <ComingSoon title="สมัครไรเดอร์" />;
 
   const set = (field: keyof FormData, value: string | boolean | File | null) =>
     setForm((f) => ({ ...f, [field]: value }));

@@ -4,12 +4,16 @@ import { useState } from 'react';
 import { ArrowLeft, MapPin, Navigation, Home } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useLiff } from '@/hooks/use-liff';
+import { FEATURES } from '@/config/features';
+import { ComingSoon } from '@/components/shared/ComingSoon';
 import { AddressAutocomplete } from '@/components/shared/AddressAutocomplete';
 import { OrderCountdownOverlay } from '@/components/shared/OrderCountdownOverlay';
 
 export default function RidePage() {
   const router = useRouter();
   const { profile } = useLiff();
+
+  if (!FEATURES.ride) return <ComingSoon title="บริการเรียกรถ" />;
   const [origin, setOrigin] = useState('');
   const [originLat, setOriginLat] = useState<number | null>(null);
   const [originLng, setOriginLng] = useState<number | null>(null);
