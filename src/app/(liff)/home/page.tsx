@@ -44,7 +44,7 @@ export default function HomePage() {
         <p className="text-white font-bold text-xl mt-0.5">
           {profile?.displayName || 'ลูกค้า'}
         </p>
-        <p className="text-orange-100 text-xs mt-1">E-RideHub คำเขื่อนแก้ว</p>
+        <p className="text-orange-100 text-xs mt-1">Juad Delivery คำเขื่อนแก้ว</p>
       </div>
 
       <div className="px-4 -mt-3">

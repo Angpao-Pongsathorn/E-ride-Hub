@@ -34,14 +34,14 @@ export async function POST(req: NextRequest) {
         await replyMessage(event.replyToken, [
           {
             type: 'flex',
-            altText: 'ช่วยเหลือ E-RideHub',
+            altText: 'ช่วยเหลือ Juad Delivery',
             contents: {
               type: 'bubble',
               body: {
                 type: 'box',
                 layout: 'vertical',
                 contents: [
-                  { type: 'text', text: 'E-RideHub คำเขื่อนแก้ว', weight: 'bold', size: 'lg' },
+                  { type: 'text', text: 'Juad Delivery คำเขื่อนแก้ว', weight: 'bold', size: 'lg' },
                   { type: 'text', text: '🍜 สั่งอาหาร: กดปุ่มบน Rich Menu', size: 'sm', margin: 'md', color: '#6B7280' },
                   { type: 'text', text: '🛵 เรียกรถ: กดปุ่มบน Rich Menu', size: 'sm', color: '#6B7280' },
                   { type: 'text', text: '📦 ส่งพัสดุ: กดปุ่มบน Rich Menu', size: 'sm', color: '#6B7280' },
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
         await replyMessage(event.replyToken, [
           {
             type: 'text',
-            text: 'สวัสดีค่ะ! กดปุ่มบน Rich Menu เพื่อใช้บริการ E-RideHub คำเขื่อนแก้วได้เลยค่ะ 😊',
+            text: 'สวัสดีค่ะ! กดปุ่มบน Rich Menu เพื่อใช้บริการ Juad Delivery คำเขื่อนแก้วได้เลยค่ะ 😊',
           },
         ]);
       }

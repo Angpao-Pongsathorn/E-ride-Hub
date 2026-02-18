@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-gradient-to-r from-gray-800 to-gray-900 px-6 pb-6 pt-8">
-        <h1 className="text-2xl font-bold text-white">E-RideHub Admin</h1>
+        <h1 className="text-2xl font-bold text-white">Juad Delivery Admin</h1>
         <p className="text-gray-400 text-sm mt-1">อำเภอคำเขื่อนแก้ว · ยโสธร</p>
       </div>
 

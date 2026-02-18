@@ -32,7 +32,7 @@ export function AddressAutocomplete({ value, onChange, placeholder, icon }: Addr
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&countrycodes=TH&accept-language=th`,
-        { headers: { 'User-Agent': 'ERideHub/1.0' } }
+        { headers: { 'User-Agent': 'JuadDelivery/1.0' } }
       );
       const data: NominatimResult[] = await res.json();
       setSuggestions(data);

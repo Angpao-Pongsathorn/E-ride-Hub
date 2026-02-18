@@ -63,7 +63,7 @@ export async function pushOrderStatusUpdate(lineUserId: string, orderNumber: str
         contents: [
           {
             type: 'text',
-            text: 'E-RideHub คำเขื่อนแก้ว',
+            text: 'Juad Delivery คำเขื่อนแก้ว',
             color: '#ffffff',
             weight: 'bold',
             size: 'sm',

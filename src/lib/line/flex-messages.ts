@@ -110,7 +110,7 @@ export function buildDeliveryCompleteFlex(orderNumber: string, total: number, or
         contents: [
           { type: 'text', text: `ออเดอร์ #${orderNumber}`, weight: 'bold' },
           { type: 'text', text: `ยอดชำระ ฿${total.toFixed(2)}`, color: '#10B981', size: 'lg', margin: 'sm' },
-          { type: 'text', text: 'ขอบคุณที่ใช้บริการ E-RideHub', color: '#6B7280', margin: 'md', size: 'sm' },
+          { type: 'text', text: 'ขอบคุณที่ใช้บริการ Juad Delivery', color: '#6B7280', margin: 'md', size: 'sm' },
         ],
       },
       footer: {

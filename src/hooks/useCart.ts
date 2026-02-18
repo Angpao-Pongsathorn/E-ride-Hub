@@ -70,6 +70,6 @@ export const useCart = create<CartState>()(
 
       clearCart: () => set({ items: [], merchantId: null, total: 0 }),
     }),
-    { name: 'eridehub-cart-v2' }
+    { name: 'juad-cart-v2' }
   )
 );

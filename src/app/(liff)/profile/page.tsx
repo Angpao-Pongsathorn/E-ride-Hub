@@ -49,7 +49,7 @@ export default function ProfilePage() {
           )}
           <div>
             <p className="text-white font-bold text-lg">{profile?.displayName}</p>
-            <p className="text-orange-100 text-sm mt-0.5">สมาชิก E-RideHub</p>
+            <p className="text-orange-100 text-sm mt-0.5">สมาชิก Juad Delivery</p>
           </div>
         </div>
       </div>

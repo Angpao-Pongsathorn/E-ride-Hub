@@ -2,13 +2,13 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'E-RideHub คำเขื่อนแก้ว',
+  title: 'Juad Delivery คำเขื่อนแก้ว',
   description: 'แพลตฟอร์มส่งอาหาร ส่งคน ส่งของ สำหรับอำเภอคำเขื่อนแก้ว จังหวัดยโสธร',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'E-RideHub',
+    title: 'Juad Delivery',
   },
 };
 

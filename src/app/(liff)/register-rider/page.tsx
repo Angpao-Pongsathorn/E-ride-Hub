@@ -357,7 +357,7 @@ export default function RegisterRiderPage() {
         {step === 4 && (
           <div className="space-y-4">
             <div className="rounded-2xl bg-white shadow-sm p-4 space-y-3 text-sm text-gray-600 leading-relaxed max-h-64 overflow-y-auto">
-              <p className="font-bold text-gray-900">เงื่อนไขการเป็นไรเดอร์ E-RideHub</p>
+              <p className="font-bold text-gray-900">เงื่อนไขการเป็นไรเดอร์ Juad Delivery</p>
               <p>1. ไรเดอร์ต้องมีอายุ 18 ปีขึ้นไป และมีใบขับขี่ที่ถูกต้องตามกฎหมาย</p>
               <p>2. ไรเดอร์ต้องรักษามาตรฐานการให้บริการ — อัตราการยอมรับงานไม่ต่ำกว่า 70%</p>
               <p>3. ค่าตอบแทน 70% ของค่าจัดส่ง โอนทุกวันจันทร์</p>

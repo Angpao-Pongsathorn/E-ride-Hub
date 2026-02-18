@@ -53,7 +53,7 @@ async function reverseGeocodeNominatim(lat: number, lng: number): Promise<Geocod
   try {
     const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=th&addressdetails=1`,
-      { headers: { 'User-Agent': 'ERideHub/1.0' } }
+      { headers: { 'User-Agent': 'JuadDelivery/1.0' } }
     );
     const data = await res.json();
     const a: NominatimAddress = data.address || {};
