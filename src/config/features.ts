@@ -10,19 +10,19 @@ export const FEATURES = {
   marketplace: true,
 
   /** เรียกรถ */
-  ride: false,
+  ride: true,
 
   /** ส่งพัสดุ */
-  parcel: false,
+  parcel: true,
 
   /** โปรโมชั่น */
-  promotions: false,
+  promotions: true,
 
   /** เปิดร้านค้า */
-  registerShop: false,
+  registerShop: true,
 
   /** สมัครไรเดอร์ */
-  registerRider: false,
+  registerRider: true,
 } as const;
 
 export type FeatureKey = keyof typeof FEATURES;
